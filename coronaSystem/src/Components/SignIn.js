@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from './Axios';
 import { useNavigate } from 'react-router-dom'
 
 function SignIn() {
@@ -8,14 +8,15 @@ function SignIn() {
   const navigate = useNavigate()
 
   const handleIdChange = (event) => {
+    console.log(event.target.value)
     setId(event.target.value);
   };
 
   const handleGetPerson = () => {
     axios.get(`/person/${id}`)
-      .then(response => {
+          .then(response => {
+            console.log("data "+response.data)
         setPerson(response.data);
-        navigate('/Home')
       })
       .catch(error => {
         console.log(error);

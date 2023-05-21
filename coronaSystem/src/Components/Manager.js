@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
+import axios from './Axios';
+import AddPerson from './AddPerson';
 
 
 function Manager() {
   const [password, setPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [persons, setPersons] = useState(null);
+  const [addNewPerson, setAddNewPerson] = useState(false);
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
@@ -18,20 +22,39 @@ function Manager() {
 
   const handleGetAllPersons = () => {
     if (isAdmin) 
-    {
-        
+    { 
+      setAddNewPerson(false)
+      axios.get(`/person/`)
+      .then(response => {
+        console.log("data "+response.data)
+        setPersons(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
     } else {
       alert('You must be an administrator to perform this action');
     }
   };
-  const handleAddPerson=()=>{
-    if(isAdmin){
-        
-    }
-    else{
-        alert('You must be an administrator to perform this action');
-    }
-  }
+ const handleAddPerson=()=>{
+  setAddNewPerson(true)
+ }
+
+  // const handleAddPerson=()=>{
+  //   if(isAdmin){
+  //     axios.post(`/person/`)
+  //     .then(response => {
+  //       console.log("data "+response.data)
+  //   setPerson(response.data);
+  // })
+  // .catch(error => {
+  //   console.log(error);
+  // });
+  //   }
+  //   else{
+  //       alert('You must be an administrator to perform this action');
+  //   }
+  // }
   return (
     <div>
       <h1>Manager</h1>
@@ -48,6 +71,21 @@ function Manager() {
           <button onClick={handleAddPerson}>add person</button>
         </div>
       )}
+        {persons && (
+          <div>
+            {persons.map((item, index) => (
+                      <div key={index}>
+                      <p>Full Name: {item.fullName}</p>
+                      <p>Identity: {item.identity}</p>
+                      <p>---------------------------------</p>
+                    </div>
+            ))}
+          </div>
+        )
+        }
+        {addNewPerson &&(
+          <AddPerson/>
+        )}
     </div>
   );
 }

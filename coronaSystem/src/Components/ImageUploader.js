@@ -1,16 +1,20 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
+import { ImageContext } from './ImageContext';
 import axios from "axios";
 
 const ImageUploader = (props) => {
-    const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
     const [error, setError] = useState(null);
+    const { image, setImage} = useContext(ImageContext);
   
     const handleImageChange = (event) => {
       const selectedImage = event.target.files[0];
       setImage(selectedImage);
+      //הוא מקבל את התמונה שנבחרה באמצעות `event.target.files[0]` 
+      // ומגדיר אותה כערך המצב `image` באמצעות הפונקציה `setImage
+     
       if (selectedImage) {
-        const reader = new FileReader();
+        const reader = new FileReader();//המיר את התמונה שנבחרה לכתובת URL של נתונים
         reader.readAsDataURL(selectedImage);
         reader.onloadend = () => {
           setPreview(reader.result);
@@ -22,6 +26,8 @@ const ImageUploader = (props) => {
   
     const handleSubmit = async (event) => {
       event.preventDefault();
+      //למנוע את שליחת הטופס המוגדר כברירת מחדל
+
       if (!image) {
         setError("Please select an image to upload.");
         return;
@@ -29,14 +35,17 @@ const ImageUploader = (props) => {
       const formData = new FormData();
       formData.append("image", image);
       try {
-await axios.post(`/api/users/${props.userId}/image`, formData);
-
+        //מכיל את קובץ התמונה ושולח אותו לשרת באמצעות בקשת POST דרך `axios.post`
+        await axios.post(`/api/users/${props.userId}/image`, formData);
         setError(null);
-      } catch (err) {
+      }
+      catch (err) {
         setError(err.response.data);
       }
     };
+
   const onSubmitImage= ()=>{
+    //handleUploadSuccess?
     props.handleUploadSuccess(preview)
   }
     return (
@@ -60,3 +69,4 @@ await axios.post(`/api/users/${props.userId}/image`, formData);
   
 
 export default ImageUploader;
+// ייתכן שיהיה רעיון טוב להשתמש בספריית דחיסת תמונות כדי לייעל את תהליך העלאת התמונה.
